@@ -1,82 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Graph (Adjacency List)
-map<string, vector<pair<string,int>>> graph = {
-    {"A", {{"B", 1}, {"C", 3}}},
-    {"B", {{"A", 1}, {"D", 1}, {"E", 4}}},
-    {"C", {{"A", 3}, {"F", 5}}},
-    {"D", {{"B", 1}}},
-    {"E", {{"B", 4}, {"F", 1}}},
-    {"F", {{"C", 5}, {"E", 1}}}
+map<char, vector<pair<char,int>>> g;
+map<char,int> h = {
+    {'A',10},{'B',8},{'C',5},{'D',7},{'E',3},{'F',6},{'G',0}
 };
 
-// Heuristic (estimated distance to goal "F")
-map<string,int> h = {
-    {"A", 5},
-    {"B", 3},
-    {"C", 4},
-    {"D", 6},
-    {"E", 1},
-    {"F", 0}
-};
-
-// Node for priority queue
-struct Node {
-    string city;
-    int hval;
-
-    bool operator<(const Node &other) const {
-        return hval > other.hval; // min-heap
+struct Node{
+    char v; int h;
+    bool operator<(const Node &o)const{
+        return h>o.h;
     }
 };
 
-void bestFirstSearch(string start, string goal) {
+int main(){
+    g['A']={{'B',1},{'C',1}};
+    g['B']={{'D',1},{'E',1}};
+    g['C']={{'F',1}};
+    g['E']={{'G',1}};
+    g['F']={{'G',1}};
+
     priority_queue<Node> pq;
-    set<string> visited;
-    map<string,string> parent;
+    set<char> vis;
 
-    pq.push({start, h[start]});
-    visited.insert(start);
-    parent[start] = "";
+    pq.push({'A',h['A']});
 
-    while(!pq.empty()) {
-        Node cur = pq.top(); pq.pop();
+    while(!pq.empty()){
+        auto cur=pq.top(); pq.pop();
+        if(vis.count(cur.v)) continue;
+        vis.insert(cur.v);
 
-        if(cur.city == goal) {
-            cout << "Path found:\n";
-            vector<string> path;
+        cout<<cur.v<<" ";
 
-            string temp = goal;
-            while(temp != "") {
-                path.push_back(temp);
-                temp = parent[temp];
-            }
-
-            reverse(path.begin(), path.end());
-
-            for(auto &c : path)
-                cout << c << " ";
-
-            cout << "\n";
-            return;
+        if(cur.v=='G'){
+            cout<<"\nGoal reached\n";
+            return 0;
         }
 
-        for(auto &nbr : graph[cur.city]) {
-            string next = nbr.first;
-
-            if(!visited.count(next)) {
-                visited.insert(next);
-                parent[next] = cur.city;
-                pq.push({next, h[next]});
-            }
-        }
+        for(auto &n:g[cur.v])
+            if(!vis.count(n.first))
+                pq.push({n.first,h[n.first]});
     }
-
-    cout << "No path found\n";
-}
-
-int main() {
-    bestFirstSearch("A", "F");
-    return 0;
 }

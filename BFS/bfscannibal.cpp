@@ -2,94 +2,94 @@
 using namespace std;
 
 struct State {
-    int m, c, boat; // missionaries, cannibals, boat side (1=left,0=right)
+    int ML, CL, B;
 };
 
-// Check if state is valid
-bool isValid(int m, int c) {
-    if(m < 0 || c < 0 || m > 3 || c > 3) return false;
+bool isValid(int ML, int CL) {
+    int MR = 3 - ML;
+    int CR = 3 - CL;
 
-    int m_right = 3 - m;
-    int c_right = 3 - c;
+    if(ML < 0 || CL < 0 || ML > 3 || CL > 3) return false;
 
-    if((m > 0 && c > m) || (m_right > 0 && c_right > m_right))
-        return false;
+    if(ML > 0 && ML < CL) return false;
+    if(MR > 0 && MR < CR) return false;
 
     return true;
 }
 
-void bfs() {
-    queue<State> q;
-    map<tuple<int,int,int>, tuple<int,int,int>> parent;
-    set<tuple<int,int,int>> visited;
+void printPath(map<tuple<int,int,int>, tuple<int,int,int>> &parent,
+               tuple<int,int,int> cur) {
 
-    State start = {3,3,1};
-    State goal  = {0,0,0};
+    vector<tuple<int,int,int>> path;
+
+    while(parent[cur] != make_tuple(-1,-1,-1)) {
+        path.push_back(cur);
+        cur = parent[cur];
+    }
+    path.push_back(make_tuple(3,3,0));
+
+    reverse(path.begin(), path.end());
+
+    cout << "Solution Path:\n";
+    for(auto [ml,cl,b] : path) {
+        cout << "ML=" << ml << " CL=" << cl
+             << " | MR=" << 3-ml << " CR=" << 3-cl
+             << " | Boat=" << (b==0?"Left":"Right") << "\n";
+    }
+}
+
+void BFS() {
+    queue<tuple<int,int,int>> q;
+    set<tuple<int,int,int>> vis;
+    map<tuple<int,int,int>, tuple<int,int,int>> parent;
+
+    tuple<int,int,int> start = {3,3,0};
+    tuple<int,int,int> goal  = {0,0,1};
 
     q.push(start);
-    visited.insert({3,3,1});
-    parent[{3,3,1}] = {-1,-1,-1};
+    vis.insert(start);
+    parent[start] = {-1,-1,-1};
 
-    // Possible moves: (m,c)
     vector<pair<int,int>> moves = {
-        {1,0}, {2,0}, // missionaries
-        {0,1}, {0,2}, // cannibals
-        {1,1}         // both
+        {1,0},{2,0},{0,1},{0,2},{1,1}
     };
 
     while(!q.empty()) {
-        State cur = q.front(); q.pop();
+        auto [ML,CL,B] = q.front();
+        q.pop();
 
-        if(cur.m == 0 && cur.c == 0 && cur.boat == 0) {
-            cout << "Solution path:\n";
-
-            vector<tuple<int,int,int>> path;
-            auto t = make_tuple(cur.m, cur.c, cur.boat);
-
-            while(get<0>(t) != -1) {
-                path.push_back(t);
-                t = parent[t];
-            }
-
-            reverse(path.begin(), path.end());
-
-            for(auto &s : path) {
-                cout << "(M=" << get<0>(s)
-                     << ", C=" << get<1>(s)
-                     << ", Boat=" << (get<2>(s)==1?"Left":"Right")
-                     << ")\n";
-            }
+        if(make_tuple(ML,CL,B) == goal) {
+            printPath(parent, goal);
             return;
         }
 
-        for(auto &mv : moves) {
-            int m = cur.m;
-            int c = cur.c;
-            int b = cur.boat;
+        for(auto [m,c] : moves) {
+            int nML = ML, nCL = CL, nB;
 
-            State next;
-
-            if(b == 1) { // boat on left → move to right
-                next = {m - mv.first, c - mv.second, 0};
-            } else {     // boat on right → move to left
-                next = {m + mv.first, c + mv.second, 1};
+            if(B == 0) {
+                nML = ML - m;
+                nCL = CL - c;
+                nB = 1;
+            } else {
+                nML = ML + m;
+                nCL = CL + c;
+                nB = 0;
             }
 
-            if(isValid(next.m, next.c)) {
-                auto key = make_tuple(next.m, next.c, next.boat);
-                if(!visited.count(key)) {
-                    visited.insert(key);
-                    parent[key] = make_tuple(m, c, b);
+            if(isValid(nML, nCL)) {
+                auto next = make_tuple(nML,nCL,nB);
+                if(!vis.count(next)) {
+                    vis.insert(next);
+                    parent[next] = {ML,CL,B};
                     q.push(next);
                 }
             }
         }
     }
 
-    cout << "No solution found\n";
+    cout << "No solution\n";
 }
 
 int main() {
-    bfs();
-    return 0;
+    BFS();
 }

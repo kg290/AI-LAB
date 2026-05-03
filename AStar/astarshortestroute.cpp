@@ -1,89 +1,63 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Graph (Adjacency list: node -> {neighbor, cost})
-map<string, vector<pair<string,int>>> graph = {
-    {"A", {{"B", 1}, {"C", 4}}},
-    {"B", {{"A", 1}, {"D", 2}, {"E", 5}}},
-    {"C", {{"A", 4}, {"F", 3}}},
-    {"D", {{"B", 2}}},
-    {"E", {{"B", 5}, {"F", 1}}},
-    {"F", {{"C", 3}, {"E", 1}}}
+map<char, vector<pair<char,int>>> g;
+map<char,int> h = {
+    {'A',10},{'B',8},{'C',5},{'D',7},{'E',3},{'F',6},{'G',0}
 };
 
-// Heuristic values (estimate to goal "F")
-map<string,int> h = {
-    {"A", 5},
-    {"B", 3},
-    {"C", 4},
-    {"D", 6},
-    {"E", 1},
-    {"F", 0}
-};
-
-// Node for priority queue
-struct Node {
-    string city;
-    int g, h;
-
-    bool operator<(const Node &other) const {
-        return (g + h) > (other.g + other.h); // min-heap
+struct Node{
+    char v; int g,f;
+    bool operator<(const Node &o)const{
+        return f>o.f;
     }
 };
 
-void aStar(string start, string goal) {
+int main(){
+    g['A']={{'B',1},{'C',4}};
+    g['B']={{'D',2},{'E',5}};
+    g['C']={{'F',1}};
+    g['D']={{'G',7}};
+    g['E']={{'G',2}};
+    g['F']={{'G',3}};
+
     priority_queue<Node> pq;
-    map<string,int> gCost;
-    map<string,string> parent;
-    set<string> visited;
+    map<char,int> dist;
+    map<char,char> parent;   // <-- store path
 
-    pq.push({start, 0, h[start]});
-    gCost[start] = 0;
-    parent[start] = "";
+    pq.push({'A',0,h['A']});
+    dist['A']=0;
+    parent['A'] = '-'; // start marker
 
-    while(!pq.empty()) {
-        Node cur = pq.top(); pq.pop();
+    while(!pq.empty()){
+        auto cur=pq.top(); pq.pop();
 
-        if(cur.city == goal) {
-            cout << "Optimal path:\n";
-            vector<string> path;
+        if(cur.v=='G'){
+            cout<<"Cost: "<<cur.g<<"\n";
 
-            string temp = goal;
-            while(temp != "") {
-                path.push_back(temp);
-                temp = parent[temp];
+            // reconstruct path
+            vector<char> path;
+            char node = 'G';
+            while(node != '-'){
+                path.push_back(node);
+                node = parent[node];
             }
-
             reverse(path.begin(), path.end());
 
-            for(auto &c : path)
-                cout << c << " ";
+            cout<<"Path: ";
+            for(char c : path) cout<<c<<" ";
+            cout<<"\n";
 
-            cout << "\nTotal cost: " << gCost[goal] << "\n";
-            return;
+            return 0;
         }
 
-        if(visited.count(cur.city)) continue;
-        visited.insert(cur.city);
-
-        for(auto &nbr : graph[cur.city]) {
-            string next = nbr.first;
-            int cost = nbr.second;
-
-            int newG = gCost[cur.city] + cost;
-
-            if(!gCost.count(next) || newG < gCost[next]) {
-                gCost[next] = newG;
-                parent[next] = cur.city;
-                pq.push({next, newG, h[next]});
+        for(auto &n:g[cur.v]){
+            int ng=cur.g+n.second;
+            if(!dist.count(n.first)||ng<dist[n.first]){
+                dist[n.first]=ng;
+                parent[n.first]=cur.v;   // <-- track parent
+                pq.push({n.first,ng,ng+h[n.first]});
             }
         }
     }
-
-    cout << "No path found\n";
-}
-
-int main() {
-    aStar("A", "F");
-    return 0;
 }

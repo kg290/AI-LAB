@@ -1,51 +1,60 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int cap1 = 4, cap2 = 3, target = 2;
+set<pair<int,int>> vis;
+map<pair<int,int>, pair<int,int>> parent;
 
-set<pair<int,int>> visited;
-vector<pair<int,int>> path;
+int J1 = 4, J2 = 3, target = 2;
 
-// DFS function
 bool dfs(int x, int y) {
-    // If already visited, skip
-    if(visited.count({x,y})) return false;
+    if(vis.count({x,y})) return false;
+    vis.insert({x,y});
 
-    // Mark visited and add to path
-    visited.insert({x,y});
-    path.push_back({x,y});
+    if(x == target || y == target) return true;
 
-    // Check goal
-    if(x == target || y == target)
-        return true;
+    vector<pair<int,int>> next;
 
-    // All possible moves
-    vector<pair<int,int>> next = {
-        {cap1, y}, // fill jar1
-        {x, cap2}, // fill jar2
-        {0, y},    // empty jar1
-        {x, 0},    // empty jar2
-        {max(0, x - (cap2 - y)), min(cap2, y + x)}, // pour 1->2
-        {min(cap1, x + y), max(0, y - (cap1 - x))}  // pour 2->1
-    };
+    next.push_back({J1, y});
+    next.push_back({x, J2});
+    next.push_back({0, y});
+    next.push_back({x, 0});
 
-    for(auto &s : next) {
-        if(dfs(s.first, s.second))
-            return true;
+    int pour = min(x, J2 - y);
+    next.push_back({x - pour, y + pour});
+
+    pour = min(y, J1 - x);
+    next.push_back({x + pour, y - pour});
+
+    for(auto [nx,ny] : next) {
+        if(!vis.count({nx,ny})) {
+            parent[{nx,ny}] = {x,y};
+            if(dfs(nx,ny)) return true;
+        }
     }
-
-    // Backtrack
-    path.pop_back();
     return false;
 }
 
-int main() {
-    if(dfs(0,0)) {
-        cout << "Solution path:\n";
-        for(auto &p : path)
-            cout << "(" << p.first << ", " << p.second << ")\n";
-    } else {
-        cout << "No solution found\n";
+void print(pair<int,int> cur) {
+    vector<pair<int,int>> path;
+    while(parent.count(cur)) {
+        path.push_back(cur);
+        cur = parent[cur];
     }
-    return 0;
+    path.push_back({0,0});
+    reverse(path.begin(), path.end());
+
+    for(auto [x,y] : path)
+        cout << "(" << x << "," << y << ")\n";
+}
+
+int main() {
+    parent.clear();
+    if(dfs(0,0)) {
+        for(auto &p: vis){
+            if(p.first==target || p.second==target){
+                print(p);
+                break;
+            }
+        }
+    }
 }

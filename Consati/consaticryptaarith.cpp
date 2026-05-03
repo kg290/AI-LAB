@@ -1,47 +1,32 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool used[10];
+vector<char> letters = {'S','E','N','D','M','O','R','Y'};
+int val[256];          // mapping char -> digit
+bool used[10];         // digits used
 
-// Convert word to number
-int getNum(string s, map<char,int> &mp) {
-    int num = 0;
-    for(char c : s)
-        num = num * 10 + mp[c];
-    return num;
+bool valid() {
+    if(val['S'] == 0 || val['M'] == 0) return false;
+
+    int SEND = val['S']*1000 + val['E']*100 + val['N']*10 + val['D'];
+    int MORE = val['M']*1000 + val['O']*100 + val['R']*10 + val['E'];
+    int MONEY= val['M']*10000 + val['O']*1000 + val['N']*100 + val['E']*10 + val['Y'];
+
+    return SEND + MORE == MONEY;
 }
 
-// Backtracking solver
-bool solve(vector<char> &letters, map<char,int> &mp, int idx) {
+bool solve(int idx) {
     if(idx == letters.size()) {
-        int send  = getNum("SEND", mp);
-        int more  = getNum("MORE", mp);
-        int money = getNum("MONEY", mp);
-
-        if(send + more == money) {
-            cout << "Solution:\n";
-            for(auto &p : mp)
-                cout << p.first << " = " << p.second << "\n";
-            cout << "SEND = " << send << "\n";
-            cout << "MORE = " << more << "\n";
-            cout << "MONEY = " << money << "\n";
-            return true;
-        }
+        if(valid()) return true;
         return false;
     }
 
-    char ch = letters[idx];
-
     for(int d = 0; d <= 9; d++) {
         if(!used[d]) {
-            // Leading digit constraint
-            if((ch == 'S' || ch == 'M') && d == 0) continue;
-
+            val[letters[idx]] = d;
             used[d] = true;
-            mp[ch] = d;
 
-            if(solve(letters, mp, idx + 1))
-                return true;
+            if(solve(idx + 1)) return true;
 
             used[d] = false;
         }
@@ -50,13 +35,18 @@ bool solve(vector<char> &letters, map<char,int> &mp, int idx) {
 }
 
 int main() {
-    vector<char> letters = {'S','E','N','D','M','O','R','Y'};
-    map<char,int> mp;
-
     memset(used, false, sizeof(used));
 
-    if(!solve(letters, mp, 0))
-        cout << "No solution found\n";
+    if(solve(0)) {
+        for(auto c : letters)
+            cout << c << " = " << val[c] << "\n";
 
-    return 0;
+        int SEND = val['S']*1000 + val['E']*100 + val['N']*10 + val['D'];
+        int MORE = val['M']*1000 + val['O']*100 + val['R']*10 + val['E'];
+        int MONEY= val['M']*10000 + val['O']*1000 + val['N']*100 + val['E']*10 + val['Y'];
+
+        cout << "\n" << SEND << " + " << MORE << " = " << MONEY << "\n";
+    } else {
+        cout << "No solution\n";
+    }
 }

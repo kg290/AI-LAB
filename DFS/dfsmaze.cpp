@@ -1,89 +1,49 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
-int n = 3;
-int m = 3;
-
-int maze[3][3] = {
-    {0, 0, 1},
-    {0, 0, 0},
-    {1, 0, 0}
+int n=4, m=4;
+vector<vector<int>> maze = {
+    {0,1,0,0},
+    {0,0,0,1},
+    {1,0,1,0},
+    {0,0,0,0}
 };
 
-bool visited[3][3];
+bool vis[10][10];
+map<pair<int,int>, pair<int,int>> parent;
 
-int path[100][2];
-int path_len = 0;
+int dx[]={1,-1,0,0};
+int dy[]={0,0,1,-1};
 
-int dx[4] = {1, -1, 0, 0};
-int dy[4] = {0, 0, 1, -1};
+bool dfs(int x, int y, int gx, int gy) {
+    if(x==gx && y==gy) return true;
 
-bool is_valid(int x, int y)
-{
-    if (x >= 0 && x < n && y >= 0 && y < m && maze[x][y] == 0 && !visited[x][y])
-    {
-        return true;
+    vis[x][y]=true;
+
+    for(int i=0;i<4;i++){
+        int nx=x+dx[i], ny=y+dy[i];
+        if(nx>=0 && ny>=0 && nx<n && ny<m &&
+           maze[nx][ny]==0 && !vis[nx][ny]){
+            parent[{nx,ny}] = {x,y};
+            if(dfs(nx,ny,gx,gy)) return true;
+        }
     }
     return false;
 }
 
-bool dfs(int x, int y)
-{
-    visited[x][y] = true;
-
-    path[path_len][0] = x;
-    path[path_len][1] = y;
-    path_len++;
-
-    if (x == n - 1 && y == m - 1)
-    {
-        return true;
+void print(pair<int,int> cur) {
+    vector<pair<int,int>> path;
+    while(parent.count(cur)){
+        path.push_back(cur);
+        cur = parent[cur];
     }
+    path.push_back({0,0});
+    reverse(path.begin(), path.end());
 
-    for (int i = 0; i < 4; i++)
-    {
-        int new_x = x + dx[i];
-        int new_y = y + dy[i];
-
-        if (is_valid(new_x, new_y))
-        {
-            if (dfs(new_x, new_y))
-            {
-                return true;
-            }
-        }
-    }
-
-    path_len--;
-    return false;
+    for(auto [x,y]:path)
+        cout<<"("<<x<<","<<y<<")\n";
 }
-/*Time = O(n × m)
-Space = O(n × m)
-Time = O(b^d)
-Space = O(b × d)*/
-int main()
-{
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            visited[i][j] = false;
-        }
-    }
 
-    if (dfs(0, 0))
-    {
-        cout << "Path exists:\n";
-        for (int i = 0; i < path_len; i++)
-        {
-            cout << "(" << path[i][0] << "," << path[i][1] << ") ";
-        }
-        cout << "\n";
-    }
-    else
-    {
-        cout << "No path found.\n";
-    }
-
-    return 0;
+int main(){
+    if(dfs(0,0,3,3)) print({3,3});
 }
