@@ -1,0 +1,113 @@
+% -------- FACTS --------
+% Gender
+male(john).
+male(paul).
+male(mike).
+male(tom).
+
+female(mary).
+female(linda).
+female(susan).
+female(anna).
+
+% Parent relationships
+parent(john, paul).
+parent(mary, paul).
+
+parent(john, linda).
+parent(mary, linda).
+
+parent(paul, mike).
+parent(susan, mike).
+
+parent(paul, anna).
+parent(susan, anna).
+
+parent(linda, tom).
+
+% -------- RULES --------
+
+% Father
+father(X, Y) :-
+    parent(X, Y),
+    male(X).
+
+% Mother
+mother(X, Y) :-
+    parent(X, Y),
+    female(X).
+
+% Siblings (share at least one parent, not same person)
+sibling(X, Y) :-
+    parent(Z, X),
+    parent(Z, Y),
+    X \= Y.
+
+% Brother
+brother(X, Y) :-
+    sibling(X, Y),
+    male(X).
+
+% Sister
+sister(X, Y) :-
+    sibling(X, Y),
+    female(X).
+
+% Grandparent
+grandparent(X, Y) :-
+    parent(X, Z),
+    parent(Z, Y).
+
+% Grandfather
+grandfather(X, Y) :-
+    grandparent(X, Y),
+    male(X).
+
+% Grandmother
+grandmother(X, Y) :-
+    grandparent(X, Y),
+    female(X).
+
+% Uncle (brother of parent)
+uncle(X, Y) :-
+    brother(X, Z),
+    parent(Z, Y).
+
+% Aunt (sister of parent)
+aunt(X, Y) :-
+    sister(X, Z),
+    parent(Z, Y).
+
+% Ancestor (recursive rule)
+ancestor(X, Y) :-
+    parent(X, Y).
+
+ancestor(X, Y) :-
+    parent(X, Z),
+    ancestor(Z, Y).
+
+
+commands : 
+?- father(john, paul).
+true.
+
+?- mother(mary, linda).
+true.
+
+?- sibling(paul, linda).
+true.
+
+?- brother(paul, linda).
+true.
+
+?- sister(linda, paul).
+true.
+
+?- grandparent(john, mike).
+true.
+
+?- uncle(paul, tom).
+false.
+
+?- ancestor(john, anna).
+true.

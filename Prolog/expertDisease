@@ -1,0 +1,62 @@
+% -------- FACTS --------
+% symptom(Patient, Symptom)
+
+symptom(john, fever).
+symptom(john, cough).
+symptom(john, fatigue).
+
+symptom(mary, fever).
+symptom(mary, rash).
+symptom(mary, joint_pain).
+
+symptom(paul, headache).
+symptom(paul, nausea).
+symptom(paul, sensitivity_to_light).
+
+symptom(linda, fever).
+symptom(linda, cough).
+symptom(linda, breathing_difficulty).
+
+% -------- RULES --------
+
+% Flu
+disease(Patient, flu) :-
+    symptom(Patient, fever),
+    symptom(Patient, cough),
+    symptom(Patient, fatigue).
+
+% COVID-19 (simplified rule)
+disease(Patient, covid19) :-
+    symptom(Patient, fever),
+    symptom(Patient, cough),
+    symptom(Patient, breathing_difficulty).
+
+% Dengue
+disease(Patient, dengue) :-
+    symptom(Patient, fever),
+    symptom(Patient, rash),
+    symptom(Patient, joint_pain).
+
+% Migraine
+disease(Patient, migraine) :-
+    symptom(Patient, headache),
+    symptom(Patient, nausea),
+    symptom(Patient, sensitivity_to_light).
+
+% General diagnosis rule
+diagnosis(Patient, Disease) :-
+    disease(Patient, Disease).
+
+Commands : 
+
+?- diagnosis(john, D).
+D = flu.
+
+?- diagnosis(linda, D).
+D = covid19.
+
+?- diagnosis(mary, D).
+D = dengue.
+
+?- diagnosis(paul, D).
+D = migraine.

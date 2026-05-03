@@ -1,0 +1,108 @@
+% -------- FACTS --------
+% Fruits
+fruit(apple).
+fruit(banana).
+fruit(mango).
+fruit(orange).
+fruit(grape).
+
+% Vegetables
+vegetable(carrot).
+vegetable(potato).
+vegetable(spinach).
+vegetable(cabbage).
+vegetable(onion).
+
+% Properties
+color(apple, red).
+color(banana, yellow).
+color(mango, yellow).
+color(orange, orange).
+color(grape, green).
+
+color(carrot, orange).
+color(potato, brown).
+color(spinach, green).
+color(cabbage, green).
+color(onion, white).
+
+taste(apple, sweet).
+taste(banana, sweet).
+taste(mango, sweet).
+taste(orange, sour).
+taste(grape, sweet).
+
+taste(carrot, sweet).
+taste(potato, bland).
+taste(spinach, bitter).
+taste(cabbage, bitter).
+taste(onion, pungent).
+
+% -------- RULES --------
+
+% Edible items
+edible(X) :-
+    fruit(X);
+    vegetable(X).
+
+% Sweet fruits
+sweet_fruit(X) :-
+    fruit(X),
+    taste(X, sweet).
+
+% Sour fruits
+sour_fruit(X) :-
+    fruit(X),
+    taste(X, sour).
+
+% Leafy vegetables
+leafy_vegetable(X) :-
+    vegetable(X),
+    (X = spinach; X = cabbage).
+
+% Root vegetables
+root_vegetable(X) :-
+    vegetable(X),
+    (X = carrot; X = potato; X = onion).
+
+% Green vegetables
+green_vegetable(X) :-
+    vegetable(X),
+    color(X, green).
+
+% General classification
+type(X, fruit) :-
+    fruit(X).
+
+type(X, vegetable) :-
+    vegetable(X).
+
+
+
+Commands : 
+?- fruit(apple).
+true.
+
+?- vegetable(carrot).
+true.
+
+?- sweet_fruit(mango).
+true.
+
+?- sour_fruit(orange).
+true.
+
+?- leafy_vegetable(spinach).
+true.
+
+?- root_vegetable(potato).
+true.
+
+?- green_vegetable(cabbage).
+true.
+
+?- edible(onion).
+true.
+
+?- type(banana, fruit).
+true.

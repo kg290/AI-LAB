@@ -1,0 +1,67 @@
+% -------- FACTS --------
+% Define positive words
+positive_word(good).
+positive_word(great).
+positive_word(excellent).
+positive_word(happy).
+positive_word(love).
+positive_word(amazing).
+
+% Define negative words
+negative_word(bad).
+negative_word(terrible).
+negative_word(poor).
+negative_word(sad).
+negative_word(hate).
+negative_word(awful).
+
+% -------- RULES --------
+
+% Count positive words in a sentence (list of words)
+count_positive([], 0).
+count_positive([H|T], Count) :-
+    positive_word(H),
+    count_positive(T, C),
+    Count is C + 1.
+
+count_positive([H|T], Count) :-
+    \+ positive_word(H),
+    count_positive(T, Count).
+
+% Count negative words
+count_negative([], 0).
+count_negative([H|T], Count) :-
+    negative_word(H),
+    count_negative(T, C),
+    Count is C + 1.
+
+count_negative([H|T], Count) :-
+    \+ negative_word(H),
+    count_negative(T, Count).
+
+% Sentiment classification
+sentiment(Text, positive) :-
+    count_positive(Text, P),
+    count_negative(Text, N),
+    P > N.
+
+sentiment(Text, negative) :-
+    count_positive(Text, P),
+    count_negative(Text, N),
+    N > P.
+
+sentiment(Text, neutral) :-
+    count_positive(Text, P),
+    count_negative(Text, N),
+    P =:= N.
+
+
+Commands : 
+?- sentiment([i, love, this, product], S).
+S = positive.
+
+?- sentiment([this, is, bad, and, awful], S).
+S = negative.
+
+?- sentiment([this, is, good, but, also, bad], S).
+S = neutral.

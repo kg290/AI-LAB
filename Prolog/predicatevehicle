@@ -1,0 +1,106 @@
+% -------- FACTS --------
+% Vehicles
+vehicle(car).
+vehicle(bike).
+vehicle(truck).
+vehicle(bus).
+vehicle(bicycle).
+vehicle(scooter).
+
+% Number of wheels
+wheels(car, 4).
+wheels(truck, 6).
+wheels(bus, 6).
+wheels(bike, 2).
+wheels(bicycle, 2).
+wheels(scooter, 2).
+
+% Fuel type
+fuel(car, petrol).
+fuel(bike, petrol).
+fuel(scooter, petrol).
+fuel(truck, diesel).
+fuel(bus, diesel).
+fuel(bicycle, none).
+
+% Usage type
+private(car).
+private(bike).
+private(scooter).
+private(bicycle).
+
+commercial(truck).
+commercial(bus).
+
+% -------- RULES --------
+
+% Two-wheeler
+two_wheeler(X) :-
+    vehicle(X),
+    wheels(X, 2).
+
+% Four-wheeler
+four_wheeler(X) :-
+    vehicle(X),
+    wheels(X, 4).
+
+% Heavy vehicle (more than 4 wheels)
+heavy_vehicle(X) :-
+    vehicle(X),
+    wheels(X, W),
+    W > 4.
+
+% Petrol vehicle
+petrol_vehicle(X) :-
+    fuel(X, petrol).
+
+% Diesel vehicle
+diesel_vehicle(X) :-
+    fuel(X, diesel).
+
+% Non-motorized vehicle
+non_motor_vehicle(X) :-
+    fuel(X, none).
+
+% Passenger vehicle
+passenger_vehicle(X) :-
+    private(X).
+
+% Goods vehicle
+goods_vehicle(X) :-
+    commercial(X),
+    X = truck.
+
+% Public transport
+public_transport(X) :-
+    commercial(X),
+    X = bus.
+
+
+Commands : 
+?- two_wheeler(bike).
+true.
+
+?- four_wheeler(car).
+true.
+
+?- heavy_vehicle(truck).
+true.
+
+?- petrol_vehicle(scooter).
+true.
+
+?- diesel_vehicle(bus).
+true.
+
+?- non_motor_vehicle(bicycle).
+true.
+
+?- passenger_vehicle(car).
+true.
+
+?- goods_vehicle(truck).
+true.
+
+?- public_transport(bus).
+true.

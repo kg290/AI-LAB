@@ -1,0 +1,101 @@
+% -------- FACTS (Knowledge Base) --------
+% Observable characteristics
+
+has_hair(dog).
+has_hair(cat).
+has_hair(tiger).
+
+gives_milk(dog).
+gives_milk(cat).
+gives_milk(tiger).
+
+has_feathers(eagle).
+has_feathers(parrot).
+
+can_fly(eagle).
+can_fly(parrot).
+
+cannot_fly(ostrich).
+
+lays_eggs(eagle).
+lays_eggs(parrot).
+lays_eggs(ostrich).
+
+has_scales(snake).
+has_scales(lizard).
+
+cold_blooded(snake).
+cold_blooded(lizard).
+
+% -------- RULES --------
+
+% Mammal
+mammal(X) :-
+    has_hair(X);
+    gives_milk(X).
+
+% Bird
+bird(X) :-
+    has_feathers(X);
+    (lays_eggs(X), can_fly(X)).
+
+% Reptile
+reptile(X) :-
+    has_scales(X),
+    cold_blooded(X).
+
+% Specific animal identification
+carnivore(X) :-
+    mammal(X),
+    X = tiger.
+
+domestic_animal(X) :-
+    mammal(X),
+    (X = dog; X = cat).
+
+wild_animal(X) :-
+    mammal(X),
+    X = tiger.
+
+flightless_bird(X) :-
+    bird(X),
+    cannot_fly(X).
+
+flying_bird(X) :-
+    bird(X),
+    can_fly(X).
+
+% General classification
+type(X, mammal) :-
+    mammal(X).
+
+type(X, bird) :-
+    bird(X).
+
+type(X, reptile) :-
+    reptile(X).
+
+Commands : 
+?- mammal(dog).
+true.
+
+?- bird(eagle).
+true.
+
+?- reptile(snake).
+true.
+
+?- domestic_animal(cat).
+true.
+
+?- wild_animal(tiger).
+true.
+
+?- flying_bird(parrot).
+true.
+
+?- flightless_bird(ostrich).
+true.
+
+?- type(lizard, reptile).
+true.

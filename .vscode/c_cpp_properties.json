@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "name": "MSYS2",
+      "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+      "cStandard": "c11",
+      "intelliSenseMode": "windows-gcc-x64",
+      "includePath": [
+        "${workspaceFolder}/**"
+      ]
+    }
+  ],
+  "version": 4
+}

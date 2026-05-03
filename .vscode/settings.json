@@ -1,0 +1,8 @@
+{
+  "C_Cpp.default.compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "terminal.integrated.env.windows": {
+    "PATH": "C:\\msys64\\mingw64\\bin;${env:PATH}"
+  }
+}
+

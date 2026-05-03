@@ -1,0 +1,75 @@
+% -------- FACTS --------
+% Basic bird categories
+
+bird(sparrow).
+bird(eagle).
+bird(penguin).
+bird(ostrich).
+
+% Properties of birds
+can_fly(sparrow).
+can_fly(eagle).
+
+cannot_fly(penguin).
+cannot_fly(ostrich).
+
+% Additional features
+has_feathers(sparrow).
+has_feathers(eagle).
+has_feathers(penguin).
+has_feathers(ostrich).
+
+lays_eggs(sparrow).
+lays_eggs(eagle).
+lays_eggs(penguin).
+lays_eggs(ostrich).
+
+% -------- RULES --------
+
+% A flying bird
+flying_bird(X) :-
+    bird(X),
+    can_fly(X).
+
+% A flightless bird
+flightless_bird(X) :-
+    bird(X),
+    cannot_fly(X).
+
+% General bird classification using features
+is_bird(X) :-
+    has_feathers(X),
+    lays_eggs(X).
+
+% Classification categories
+type(X, flying) :-
+    flying_bird(X).
+
+type(X, flightless) :-
+    flightless_bird(X).
+
+% Example: Special classification
+aquatic_bird(penguin).
+
+large_bird(ostrich).
+
+
+Commands : 
+
+?- bird(sparrow).
+true.
+
+?- flying_bird(eagle).
+true.
+
+?- flightless_bird(penguin).
+true.
+
+?- type(ostrich, flightless).
+true.
+
+?- is_bird(penguin).
+true.
+
+?- can_fly(penguin).
+false.

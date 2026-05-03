@@ -1,0 +1,78 @@
+% -------- FACTS --------
+% Define users and their skills
+has_skill(alice, python).
+has_skill(alice, machine_learning).
+has_skill(alice, data_analysis).
+
+has_skill(bob, java).
+has_skill(bob, sql).
+has_skill(bob, problem_solving).
+
+has_skill(charlie, html).
+has_skill(charlie, css).
+has_skill(charlie, javascript).
+
+has_skill(david, networking).
+has_skill(david, linux).
+has_skill(david, security).
+
+% -------- JOB REQUIREMENTS --------
+% job(JobName, RequiredSkill)
+
+job(data_scientist, python).
+job(data_scientist, machine_learning).
+job(data_scientist, data_analysis).
+
+job(software_engineer, java).
+job(software_engineer, problem_solving).
+
+job(web_developer, html).
+job(web_developer, css).
+job(web_developer, javascript).
+
+job(system_admin, linux).
+job(system_admin, networking).
+
+job(cyber_security, security).
+job(cyber_security, networking).
+
+% -------- RULES --------
+
+% Check if a person satisfies all requirements of a job
+qualified(Person, Job) :-
+    job(Job, _),  % ensure job exists
+    forall(job(Job, Skill), has_skill(Person, Skill)).
+
+% Suggest suitable job
+suggest_job(Person, Job) :-
+    qualified(Person, Job).
+
+% Partial match (at least one skill matches)
+partial_match(Person, Job) :-
+    job(Job, Skill),
+    has_skill(Person, Skill).
+
+% Count matching skills (optional advanced rule)
+match_count(Person, Job, Count) :-
+    findall(Skill, (job(Job, Skill), has_skill(Person, Skill)), Skills),
+    length(Skills, Count).
+
+
+Commands : 
+?- qualified(alice, data_scientist).
+true.
+
+?- suggest_job(bob, software_engineer).
+true.
+
+?- qualified(charlie, web_developer).
+true.
+
+?- partial_match(alice, software_engineer).
+false.
+
+?- match_count(alice, data_scientist, C).
+C = 3.
+
+?- qualified(david, cyber_security).
+true.
