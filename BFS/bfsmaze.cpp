@@ -1,79 +1,93 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <queue>
+#include <algorithm>
+#include <vector>
 using namespace std;
 
-int n = 5, m = 5;
+#define ROW 5
+#define COL 5
 
-// Directions: up, down, left, right
+struct Node {
+    int x, y, dist;
+};
+
 int dx[] = {-1, 1, 0, 0};
 int dy[] = {0, 0, -1, 1};
 
-// Check valid cell
-bool isValid(int x, int y, vector<vector<int>> &maze, vector<vector<bool>> &vis) {
-    return (x >= 0 && x < n && y >= 0 && y < m &&
-            maze[x][y] == 0 && !vis[x][y]);
+bool isValid(int x, int y, int maze[ROW][COL], bool visited[ROW][COL]) {
+    return (x >= 0 && x < ROW && y >= 0 && y < COL &&
+            maze[x][y] == 1 && !visited[x][y]);
 }
 
-// BFS function
-void bfs(vector<vector<int>> &maze, pair<int,int> start, pair<int,int> goal) {
-    queue<pair<int,int>> q;
-    vector<vector<bool>> vis(n, vector<bool>(m, false));
-    map<pair<int,int>, pair<int,int>> parent;
+void bfs(int maze[ROW][COL], int sx, int sy, int dx1, int dy1) {
 
-    q.push(start);
-    vis[start.first][start.second] = true;
-    parent[start] = {-1, -1};
+    bool visited[ROW][COL] = {false};
+    pair<int,int> parent[ROW][COL];
 
-    while(!q.empty()) {
-        auto [x, y] = q.front();
+    queue<Node> q;
+
+    q.push({sx, sy, 0});
+    visited[sx][sy] = true;
+    parent[sx][sy] = {-1, -1};
+
+    while (!q.empty()) {
+        Node curr = q.front();
         q.pop();
 
-        if(make_pair(x,y) == goal) {
-            cout << "Path found:\n";
+        if (curr.x == dx1 && curr.y == dy1) {
 
+            cout << "Shortest Path Length: " << curr.dist << "\n";
+
+            // Reconstruct path
             vector<pair<int,int>> path;
-            pair<int,int> cur = goal;
+            int x = dx1, y = dy1;
 
-            while(cur.first != -1) {
-                path.push_back(cur);
-                cur = parent[cur];
+            while (x != -1) {
+                path.push_back({x, y});
+                auto p = parent[x][y];
+                x = p.first;
+                y = p.second;
             }
 
             reverse(path.begin(), path.end());
 
-            for(auto &p : path)
-                cout << "(" << p.first << ", " << p.second << ")\n";
+            cout << "Path:\n";
+            for (auto &p : path) {
+                cout << "(" << p.first << "," << p.second << ") ";
+            }
 
             return;
         }
 
-        for(int i=0;i<4;i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+        for (int i = 0; i < 4; i++) {
+            int nx = curr.x + dx[i];
+            int ny = curr.y + dy[i];
 
-            if(isValid(nx, ny, maze, vis)) {
-                vis[nx][ny] = true;
-                parent[{nx, ny}] = {x, y};
-                q.push({nx, ny});
+            if (isValid(nx, ny, maze, visited)) {
+                visited[nx][ny] = true;
+                parent[nx][ny] = {curr.x, curr.y};
+                q.push({nx, ny, curr.dist + 1});
             }
         }
     }
 
-    cout << "No path exists\n";
+    cout << "No path exists";
 }
 
 int main() {
-    vector<vector<int>> maze = {
-        {0, 1, 0, 0, 0},
-        {0, 1, 0, 1, 0},
-        {0, 0, 0, 1, 0},
-        {1, 1, 0, 0, 0},
-        {0, 0, 0, 1, 0}
+
+    int maze[ROW][COL] = {
+        {1, 0, 1, 1, 1},
+        {1, 1, 1, 0, 1},
+        {0, 1, 0, 1, 1},
+        {1, 1, 1, 1, 0},
+        {0, 0, 1, 1, 1}
     };
 
-    pair<int,int> start = {0, 0};
-    pair<int,int> goal  = {4, 4};
+    int startX = 0, startY = 0;
+    int endX = 4, endY = 4;
 
-    bfs(maze, start, goal);
+    bfs(maze, startX, startY, endX, endY);
 
     return 0;
 }
